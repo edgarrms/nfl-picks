@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pick Sheet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7EAE9;
+  --card:#FBFBFA;
+  --ink:#10191C;
+  --ink-soft:#5A6B70;
+  --rule:#C6CFCE;
+  --home:#1F5F46;
+  --away:#2B5878;
+  --lock:#14563B;
+  --toss:#8A6A12;
+  --alert:#93331F;
+  --focus:#1F5F46;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--paper);
+  color:var(--ink);
+  font-family:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;
+  line-height:1.5;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:780px;margin:0 auto;padding:28px 20px 80px}
+
+/* ---------- masthead ---------- */
+.masthead{
+  display:flex;align-items:baseline;justify-content:space-between;
+  gap:16px;flex-wrap:wrap;
+  border-bottom:2px solid var(--ink);
+  padding-bottom:10px;margin-bottom:22px;
+}
+h1{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;font-size:44px;line-height:.95;
+  letter-spacing:-.01em;margin:0;
+}
+.masthead p{margin:0;color:var(--ink-soft);font-size:14.5px;max-width:34ch}
+
+/* ---------- setup panel ---------- */
+.setup{
+  background:var(--card);
+  border:1px solid var(--rule);
+  border-radius:3px;
+  padding:16px 18px;
+  margin-bottom:26px;
+}
+.setup-row{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}
+label{
+  display:block;font-size:13px;font-weight:600;
+  color:var(--ink-soft);margin-bottom:5px;
+}
+input[type=password],input[type=text]{
+  font-family:'Barlow',sans-serif;font-size:15px;
+  padding:9px 11px;border:1px solid var(--rule);border-radius:3px;
+  background:#fff;color:var(--ink);min-width:260px;flex:1;
+}
+input:focus-visible,button:focus-visible{
+  outline:2px solid var(--focus);outline-offset:2px;
+}
+button{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:17px;letter-spacing:.02em;
+  padding:9px 20px;border:none;border-radius:3px;
+  background:var(--ink);color:var(--card);cursor:pointer;
+}
+button:hover{background:var(--home)}
+button:disabled{background:var(--ink-soft);cursor:default}
+button.ghost{background:none;color:var(--ink-soft);border:1px solid var(--rule)}
+button.ghost:hover{background:#fff;color:var(--ink)}
+.hint{font-size:13px;color:var(--ink-soft);margin:10px 0 0}
+.hint a{color:var(--home)}
+
+/* ---------- status ---------- */
+.status{
+  border-left:3px solid var(--ink);
+  background:var(--card);
+  padding:14px 16px;margin-bottom:24px;border-radius:0 3px 3px 0;
+}
+.status.bad{border-left-color:var(--alert)}
+.status strong{display:block;font-size:16px;margin-bottom:3px}
+.status p{margin:0;font-size:14.5px;color:var(--ink-soft)}
+.status ul{margin:8px 0 0;padding-left:18px;font-size:14.5px;color:var(--ink-soft)}
+.status li{margin-bottom:4px}
+
+/* ---------- tally ---------- */
+.tally{
+  display:flex;gap:0;margin-bottom:8px;
+  border:1px solid var(--rule);border-radius:3px;overflow:hidden;
+  background:var(--card);
+}
+.tally div{flex:1;padding:12px 14px;border-right:1px solid var(--rule)}
+.tally div:last-child{border-right:none}
+.tally b{
+  display:block;font-family:'Barlow Condensed',sans-serif;
+  font-size:30px;font-weight:700;line-height:1;
+}
+.tally span{font-size:12.5px;color:var(--ink-soft)}
+.stamp{font-size:13px;color:var(--ink-soft);margin:0 0 22px}
+
+/* ---------- day heading ---------- */
+.day{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:600;font-size:19px;
+  padding:16px 0 7px;border-bottom:1px solid var(--rule);
+  margin-bottom:2px;
+}
+
+/* ---------- game row ---------- */
+.game{
+  background:var(--card);
+  border:1px solid var(--rule);border-top:none;
+  padding:13px 16px 15px;
+}
+.game:first-of-type{border-top:1px solid var(--rule)}
+.matchup{
+  display:flex;align-items:center;justify-content:space-between;
+  gap:12px;margin-bottom:9px;
+}
+.teams{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:24px;font-weight:500;letter-spacing:.01em;
+}
+.teams .pick{font-weight:700}
+.teams .at{color:var(--ink-soft);font-weight:400;padding:0 3px}
+.verdict{text-align:right;flex-shrink:0}
+.verdict b{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:19px;font-weight:700;display:block;line-height:1.1;
+}
+.verdict span{font-size:12.5px;color:var(--ink-soft)}
+.t-lock b{color:var(--lock)}
+.t-strong b{color:var(--home)}
+.t-lean b{color:var(--toss)}
+.t-flip b{color:var(--alert)}
+
+/* the tug-of-war bar */
+.bar{
+  position:relative;height:22px;border-radius:2px;overflow:hidden;
+  background:var(--away);display:flex;
+}
+.bar .fill{background:var(--home);height:100%}
+.bar .mid{
+  position:absolute;left:50%;top:0;bottom:0;width:1px;
+  background:rgba(255,255,255,.55);
+}
+.bar .lbl{
+  position:absolute;top:0;line-height:22px;
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:13px;font-weight:600;color:#fff;
+}
+.bar .lbl.l{left:8px}
+.bar .lbl.r{right:8px}
+.meta{
+  display:flex;gap:14px;flex-wrap:wrap;
+  font-size:13px;color:var(--ink-soft);margin-top:8px;
+}
+
+/* ---------- copy block ---------- */
+.copyout{
+  margin-top:28px;padding-top:20px;border-top:2px solid var(--ink);
+}
+textarea{
+  width:100%;height:190px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:13px;padding:12px;border:1px solid var(--rule);
+  border-radius:3px;background:var(--card);color:var(--ink);resize:vertical;
+}
+.copyout h2{
+  font-family:'Barlow Condensed',sans-serif;
+  font-size:22px;font-weight:700;margin:0 0 4px;
+}
+.copyout p{margin:0 0 12px;font-size:14px;color:var(--ink-soft)}
+
+.hidden{display:none}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:560px){
+  h1{font-size:34px}
+  .teams{font-size:20px}
+  .tally b{font-size:24px}
+  input[type=password],input[type=text]{min-width:0;width:100%}
+  .setup-row button{width:100%}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <h1>Pick Sheet</h1>
+    <p>Live betting lines turned into a ranked list of who to pick this week.</p>
+  </div>
+
+  <div class="setup">
+    <div class="setup-row">
+      <div style="flex:1;min-width:240px">
+        <label for="key">Odds API key</label>
+        <input type="password" id="key" placeholder="paste your key" autocomplete="off" spellcheck="false">
+      </div>
+      <button id="go">Get the lines</button>
+      <button id="forget" class="ghost">Forget key</button>
+    </div>
+    <p class="hint">Your key is stored only in this browser and is sent straight to theoddsapi.com. Get a free key at <a href="https://the-odds-api.com" target="_blank" rel="noopener">the-odds-api.com</a>.</p>
+  </div>
+
+  <div id="status" class="status hidden"></div>
+
+  <div id="tally" class="tally hidden"></div>
+  <p id="stamp" class="stamp hidden"></p>
+
+  <div id="games"></div>
+
+  <div id="copyout" class="copyout hidden">
+    <h2>Picks to copy</h2>
+    <p>Paste this into a note, or type them straight into the pool sheet.</p>
+    <textarea id="copytext" readonly></textarea>
+    <p style="margin-top:10px"><button id="copybtn" class="ghost">Copy to clipboard</button></p>
+  </div>
+
+</div>
+
+<script>
+'use strict';
+
+var CODES = {
+  'Arizona Cardinals':'ARZ','Atlanta Falcons':'ATL','Baltimore Ravens':'BAL',
+  'Buffalo Bills':'BUF','Carolina Panthers':'CAR','Chicago Bears':'CHI',
+  'Cincinnati Bengals':'CIN','Cleveland Browns':'CLE','Dallas Cowboys':'DAL',
+  'Denver Broncos':'DEN','Detroit Lions':'DET','Green Bay Packers':'GB',
+  'Houston Texans':'HOU','Indianapolis Colts':'IND','Jacksonville Jaguars':'JAX',
+  'Kansas City Chiefs':'KC','Las Vegas Raiders':'LV','Los Angeles Chargers':'LAC',
+  'Los Angeles Rams':'LAR','Miami Dolphins':'MIA','Minnesota Vikings':'MIN',
+  'New England Patriots':'NE','New Orleans Saints':'NO','New York Giants':'NYG',
+  'New York Jets':'NYJ','Philadelphia Eagles':'PHI','Pittsburgh Steelers':'PIT',
+  'San Francisco 49ers':'SF','Seattle Seahawks':'SEA','Tampa Bay Buccaneers':'TB',
+  'Tennessee Titans':'TEN','Washington Commanders':'WAS'
+};
+
+var keyBox  = document.getElementById('key');
+var goBtn   = document.getElementById('go');
+var statusEl= document.getElementById('status');
+var gamesEl = document.getElementById('games');
+var tallyEl = document.getElementById('tally');
+var stampEl = document.getElementById('stamp');
+var copyWrap= document.getElementById('copyout');
+var copyText= document.getElementById('copytext');
+
+/* ---------- key storage ---------- */
+function loadKey(){
+  try{ return localStorage.getItem('oddsKey') || ''; }catch(e){ return ''; }
+}
+function saveKey(k){
+  try{ localStorage.setItem('oddsKey', k); }catch(e){}
+}
+keyBox.value = loadKey();
+
+document.getElementById('forget').addEventListener('click', function(){
+  try{ localStorage.removeItem('oddsKey'); }catch(e){}
+  keyBox.value = '';
+  keyBox.focus();
+  show('Key removed', 'This browser no longer has your key saved.', false);
+});
+
+/* ---------- messaging ---------- */
+function show(title, body, bad, list){
+  statusEl.className = 'status' + (bad ? ' bad' : '');
+  var html = '<strong>' + title + '</strong><p>' + body + '</p>';
+  if (list && list.length){
+    html += '<ul>';
+    for (var i=0;i<list.length;i++){ html += '<li>' + list[i] + '</li>'; }
+    html += '</ul>';
+  }
+  statusEl.innerHTML = html;
+  statusEl.classList.remove('hidden');
+}
+function clearResults(){
+  gamesEl.innerHTML = '';
+  tallyEl.classList.add('hidden');
+  stampEl.classList.add('hidden');
+  copyWrap.classList.add('hidden');
+}
+
+/* ---------- math ---------- */
+function impliedFromAmerican(price){
+  if (price > 0) return 100 / (price + 100);
+  return Math.abs(price) / (Math.abs(price) + 100);
+}
+function median(nums){
+  if (!nums.length) return null;
+  var s = nums.slice().sort(function(a,b){ return a-b; });
+  var m = Math.floor(s.length/2);
+  return s.length % 2 ? s[m] : (s[m-1] + s[m]) / 2;
+}
+
+/* ---------- fetch ---------- */
+goBtn.addEventListener('click', function(){
+  var key = keyBox.value.trim();
+  if (!key){
+    show('Add your key first', 'Paste your Odds API key in the box above, then try again.', true);
+    keyBox.focus();
+    return;
+  }
+  saveKey(key);
+  clearResults();
+  goBtn.disabled = true;
+  goBtn.textContent = 'Loading…';
+  show('Getting the lines', 'Reading current odds from theoddsapi.com.', false);
+
+  var url = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
+          + '?apiKey=' + encodeURIComponent(key)
+          + '&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso';
+
+  fetch(url)
+    .then(function(res){
+      if (res.status === 401){
+        throw new Error('KEY: The API rejected that key. Check it for a missing character, then paste it again.');
+      }
+      if (res.status === 422){
+        throw new Error('KEY: The API understood the key but refused the request. Your plan may not cover this data.');
+      }
+      if (res.status === 429){
+        throw new Error('KEY: You are out of requests for this month on that key.');
+      }
+      if (!res.ok){
+        throw new Error('KEY: The API answered with error ' + res.status + '.');
+      }
+      return res.json();
+    })
+    .then(render)
+    .catch(function(err){
+      var msg = String(err && err.message || err);
+      if (msg.indexOf('KEY:') === 0){
+        show('The request was refused', msg.slice(4).trim(), true);
+      } else {
+        show(
+          'Could not reach the odds service',
+          'The browser could not complete the request. That almost always means the network is blocking it rather than anything being wrong with this page.',
+          true,
+          [
+            'On a work network, theoddsapi.com is often blocked. Try again on your phone with Wi-Fi off, or on a home computer.',
+            'Open <b>https://the-odds-api.com</b> in a new tab. If that page will not load either, the network is the problem.',
+            'If the site loads but this page still fails, check that the key has no stray spaces.'
+          ]
+        );
+      }
+    })
+    .then(function(){
+      goBtn.disabled = false;
+      goBtn.textContent = 'Get the lines';
+    });
+});
+
+/* ---------- build the sheet ---------- */
+function render(events){
+  if (!events || !events.length){
+    show('No games listed', 'The odds service has no upcoming NFL games posted right now. Lines usually appear a few days before kickoff.', false);
+    return;
+  }
+
+  var rows = [];
+
+  for (var i=0;i<events.length;i++){
+    var ev = events[i];
+    var away = CODES[ev.away_team] || ev.away_team;
+    var home = CODES[ev.home_team] || ev.home_team;
+
+    var homeProbs = [], homeSpreads = [], totals = [], books = 0;
+
+    var bks = ev.bookmakers || [];
+    for (var b=0;b<bks.length;b++){
+      var mkts = bks[b].markets || [];
+      var used = false;
+      for (var m=0;m<mkts.length;m++){
+        var mk = mkts[m];
+        var outs = mk.outcomes || [];
+
+        if (mk.key === 'h2h' && outs.length === 2){
+          var pH=null, pA=null;
+          for (var o=0;o<outs.length;o++){
+            if (outs[o].name === ev.home_team) pH = impliedFromAmerican(outs[o].price);
+            if (outs[o].name === ev.away_team) pA = impliedFromAmerican(outs[o].price);
+          }
+          if (pH !== null && pA !== null && (pH + pA) > 0){
+            homeProbs.push(pH / (pH + pA));   // strip the vig
+            used = true;
+          }
+        }
+
+        if (mk.key === 'totals'){
+          for (var t=0;t<outs.length;t++){
+            if (typeof outs[t].point === 'number'){ totals.push(outs[t].point); break; }
+          }
+          used = true;
+        }
+
+        if (mk.key === 'spreads'){
+          for (var s=0;s<outs.length;s++){
+            if (outs[s].name === ev.home_team && typeof outs[s].point === 'number'){
+              homeSpreads.push(outs[s].point);
+              used = true;
+            }
+          }
+        }
+      }
+      if (used) books++;
+    }
+
+    if (!homeProbs.length) continue;
+
+    var pHome = median(homeProbs);
+    var spread = median(homeSpreads);
+    var favIsHome = pHome >= 0.5;
+
+    rows.push({
+      away: away,
+      home: home,
+      kick: new Date(ev.commence_time),
+      pick: favIsHome ? home : away,
+      dog:  favIsHome ? away : home,
+      pHome: pHome,
+      conf: favIsHome ? pHome : (1 - pHome),
+      spread: spread,
+      total: median(totals),
+      books: books
+    });
+  }
+
+  if (!rows.length){
+    show('No lines posted yet', 'Games are listed but no sportsbook has put up odds for them yet. Check back closer to game day.', false);
+    return;
+  }
+
+  rows.sort(function(a,b){ return b.conf - a.conf; });
+
+  // tally
+  var locks=0, strong=0, flips=0;
+  rows.forEach(function(r){
+    if (r.conf >= 0.75) locks++;
+    else if (r.conf >= 0.65) strong++;
+    else if (r.conf < 0.57) flips++;
+  });
+  tallyEl.innerHTML =
+      '<div><b>' + rows.length + '</b><span>games with lines</span></div>'
+    + '<div><b style="color:var(--lock)">' + locks + '</b><span>safe picks</span></div>'
+    + '<div><b style="color:var(--home)">' + strong + '</b><span>solid picks</span></div>'
+    + '<div><b style="color:var(--alert)">' + flips + '</b><span>coin flips</span></div>';
+  tallyEl.classList.remove('hidden');
+
+  stampEl.textContent = 'Lines read ' + new Date().toLocaleString([], {
+    weekday:'short', month:'short', day:'numeric', hour:'numeric', minute:'2-digit'
+  }) + '. Ordered from safest pick to biggest gamble.';
+  stampEl.classList.remove('hidden');
+
+  // rows
+  var html = '', plain = '', lastDay = '';
+  for (var r=0;r<rows.length;r++){
+    var g = rows[r];
+    var dayKey = g.kick.toLocaleDateString([], { weekday:'long', month:'long', day:'numeric' });
+    if (dayKey !== lastDay && r === 0){
+      // first heading only after sort loses day order — keep a single heading
+    }
+    html += gameRow(g);
+    plain += pad(g.pick, 4) + '  over ' + pad(g.dog, 4)
+           + '   ' + Math.round(g.conf * 100) + '%'
+           + (typeof g.spread === 'number' ? '   (' + spreadText(g) + ')' : '')
+           + '\n';
+  }
+  gamesEl.innerHTML = html;
+
+  var last = rows.slice().sort(function(a,b){ return b.kick - a.kick; })[0];
+  if (last && typeof last.total === 'number'){
+    plain += '\nTiebreaker ' + last.away + ' at ' + last.home + ': ' + last.total + '\n';
+  }
+
+  copyText.value = plain;
+  copyWrap.classList.remove('hidden');
+
+  show('Sheet is ready',
+       rows.length + ' games ranked. The bar shows how the two teams split the odds — the wider side is the pick.',
+       false);
+}
+
+function pad(s, n){
+  s = String(s);
+  while (s.length < n) s += ' ';
+  return s;
+}
+function spreadText(g){
+  if (typeof g.spread !== 'number') return '';
+  var fav = g.spread < 0 ? g.home : g.away;
+  return fav + ' by ' + Math.abs(g.spread);
+}
+
+function gameRow(g){
+  var pct = Math.round(g.conf * 100);
+  var homePct = Math.round(g.pHome * 100);
+  var tier, word, note;
+
+  if (g.conf >= 0.75){ tier='t-lock';   word='Safe';       note='the crowd agrees'; }
+  else if (g.conf >= 0.65){ tier='t-strong'; word='Solid';  note='clear favorite'; }
+  else if (g.conf >= 0.57){ tier='t-lean';   word='Lean';   note='slight edge'; }
+  else { tier='t-flip'; word='Coin flip'; note='could go either way'; }
+
+  var awayIsPick = (g.pick === g.away);
+
+  var teams =
+      '<span class="' + (awayIsPick ? 'pick' : '') + '">' + g.away + '</span>'
+    + '<span class="at">at</span>'
+    + '<span class="' + (!awayIsPick ? 'pick' : '') + '">' + g.home + '</span>';
+
+  var bar =
+      '<div class="bar" role="img" aria-label="' + g.away + ' ' + (100-homePct) + ' percent, '
+      + g.home + ' ' + homePct + ' percent">'
+    +   '<div style="width:' + (100 - homePct) + '%"></div>'
+    +   '<div class="fill" style="width:' + homePct + '%"></div>'
+    +   '<div class="mid"></div>'
+    +   '<div class="lbl l">' + g.away + ' ' + (100 - homePct) + '</div>'
+    +   '<div class="lbl r">' + homePct + ' ' + g.home + '</div>'
+    + '</div>';
+
+  var when = g.kick.toLocaleString([], {
+    weekday:'short', hour:'numeric', minute:'2-digit'
+  });
+
+  var meta = '<div class="meta"><span>' + when + '</span>';
+  if (typeof g.spread === 'number' && g.spread !== 0){
+    meta += '<span>' + spreadText(g) + '</span>';
+  }
+  if (typeof g.total === 'number'){
+    meta += '<span>combined ' + g.total + '</span>';
+  }
+  meta += '<span>' + g.books + ' sportsbook' + (g.books === 1 ? '' : 's') + '</span></div>';
+
+  return '<div class="game ' + tier + '">'
+       +   '<div class="matchup">'
+       +     '<div class="teams">' + teams + '</div>'
+       +     '<div class="verdict"><b>' + word + '</b><span>take ' + g.pick + ' &middot; ' + note + '</span></div>'
+       +   '</div>'
+       +   bar
+       +   meta
+       + '</div>';
+}
+
+/* ---------- copy ---------- */
+document.getElementById('copybtn').addEventListener('click', function(){
+  var btn = this;
+  copyText.select();
+  var ok = false;
+  try { ok = document.execCommand('copy'); } catch(e){}
+  if (navigator.clipboard && !ok){
+    navigator.clipboard.writeText(copyText.value).then(function(){
+      btn.textContent = 'Copied';
+      setTimeout(function(){ btn.textContent = 'Copy to clipboard'; }, 1600);
+    });
+    return;
+  }
+  btn.textContent = ok ? 'Copied' : 'Select the text and copy';
+  setTimeout(function(){ btn.textContent = 'Copy to clipboard'; }, 1600);
+});
+
+/* enter key runs it */
+keyBox.addEventListener('keydown', function(e){
+  if (e.key === 'Enter') goBtn.click();
+});
+</script>
+</body>
+</html>
