@@ -146,6 +146,41 @@ input[type=password]{
 .advice.flip b{color:var(--flag)}
 .advice.hold b{color:var(--lock)}
 
+.more{
+  margin-top:8px;width:100%;text-align:left;background:none;border:none;
+  border-top:1px dashed var(--rule);border-radius:0;padding:8px 0 0;
+  font-size:13px;color:var(--ink-soft);font-family:'Barlow',sans-serif;font-weight:500;
+}
+.more:hover{color:var(--ink);border-color:var(--rule)}
+.more::after{content:" \25BE"}
+.more[aria-expanded="true"]::after{content:" \25B4"}
+
+.detail{margin-top:10px;display:flex;gap:12px;flex-wrap:wrap}
+.tcard{
+  flex:1;min-width:210px;background:var(--paper);
+  border:1px solid var(--rule);border-radius:3px;padding:10px 11px;
+}
+.tcard h4{
+  font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:700;
+  margin:0 0 1px;display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+}
+.tcard h4 em{font-style:normal;font-size:13px;font-weight:500;color:var(--ink-soft)}
+.tcard .sect{
+  font-size:11px;color:var(--ink-soft);text-transform:uppercase;
+  letter-spacing:.05em;margin:10px 0 3px;
+}
+.tcard ul{margin:0;padding:0;list-style:none;font-size:13.5px}
+.tcard li{padding:3px 0;border-bottom:1px solid var(--rule);display:flex;justify-content:space-between;gap:8px}
+.tcard li:last-child{border-bottom:none}
+.tcard li .who{flex:1}
+.tcard li .pos{color:var(--ink-soft);font-size:12px;padding-right:6px}
+.tcard li .st{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;white-space:nowrap}
+.st-out{color:var(--miss)}
+.st-doubt{color:var(--alert)}
+.st-quest{color:var(--toss)}
+.st-ok{color:var(--ink-soft)}
+.tcard .none{font-size:13px;color:var(--ink-soft);padding:3px 0}
+
 .season{margin-top:26px;padding-top:18px;border-top:2px solid var(--ink)}
 .season h2{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;margin:0 0 3px}
 .season p{margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
@@ -241,6 +276,7 @@ var FPICACHE= readStore('fpi:'+SEASON, {});
 function savePicks(){ writeStore('picks:'+SEASON, PICKS); }
 function saveResults(){ writeStore('results:'+SEASON, RESULTS); }
 function saveFpi(){ writeStore('fpi:'+SEASON, FPICACHE); }
+var SUMCACHE = {};   // gameId -> parsed summary, this visit only
 
 function getKey(){ try{ return localStorage.getItem('oddsKey')||''; }catch(e){ return ''; } }
 keyBox.value = getKey();
@@ -342,6 +378,131 @@ function fetchFpi(id){
       return v;
     })
     .catch(function(){ return null; });
+}
+
+/* ---------- injuries, records and leaders, one call per game ---------- */
+function fetchSummary(id){
+  if(SUMCACHE[id]) return Promise.resolve(SUMCACHE[id]);
+  var path='/apis/site/v2/sports/football/nfl/summary?event='+id;
+  return fetch('https://site.api.espn.com'+path)
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .catch(function(){
+      return fetch('https://site.web.api.espn.com'+path).then(function(r){
+        if(!r.ok) throw new Error('no summary'); return r.json();
+      });
+    })
+    .then(function(d){ var parsed=parseSummary(d); SUMCACHE[id]=parsed; return parsed; })
+    .catch(function(){ return null; });
+}
+
+function statusClass(s){
+  s=(s||'').toLowerCase();
+  if(s.indexOf('out')===0 || s.indexOf('injured reserve')>=0 || s.indexOf('suspend')>=0) return 'st-out';
+  if(s.indexOf('doubt')>=0) return 'st-doubt';
+  if(s.indexOf('question')>=0) return 'st-quest';
+  return 'st-ok';
+}
+function rank(s){
+  var c=statusClass(s);
+  return c==='st-out'?0 : c==='st-doubt'?1 : c==='st-quest'?2 : 3;
+}
+
+function parseSummary(d){
+  var byTeam = {};
+  function bucket(abbr){
+    var k=code(abbr);
+    if(!k) return null;
+    if(!byTeam[k]) byTeam[k]={ record:'', injuries:[], leaders:[] };
+    return byTeam[k];
+  }
+
+  /* records from the header */
+  try{
+    var comps=d.header.competitions[0].competitors||[];
+    comps.forEach(function(c){
+      var b=bucket(c.team && c.team.abbreviation);
+      if(!b) return;
+      var rec=(c.record||[])[0];
+      if(rec) b.record = rec.summary || rec.displayValue || '';
+    });
+  }catch(e){}
+
+  /* injuries */
+  try{
+    (d.injuries||[]).forEach(function(blk){
+      var b=bucket(blk.team && blk.team.abbreviation);
+      if(!b) return;
+      (blk.injuries||[]).forEach(function(it){
+        var ath=it.athlete||{};
+        var det=it.details||{};
+        var what = det.type || det.detail || (it.type && it.type.description) || '';
+        b.injuries.push({
+          name: ath.displayName || ath.shortName || 'Unnamed',
+          pos: (ath.position && (ath.position.abbreviation||ath.position.name)) || '',
+          status: it.status || (it.type && it.type.description) || 'Listed',
+          what: what
+        });
+      });
+    });
+  }catch(e){}
+
+  /* stat leaders */
+  try{
+    (d.leaders||[]).forEach(function(blk){
+      var b=bucket(blk.team && blk.team.abbreviation);
+      if(!b) return;
+      (blk.leaders||[]).forEach(function(cat){
+        var top=(cat.leaders||[])[0];
+        if(!top) return;
+        b.leaders.push({
+          cat: cat.shortDisplayName || cat.displayName || cat.name,
+          who: (top.athlete && (top.athlete.shortName || top.athlete.displayName)) || '',
+          val: top.displayValue || ''
+        });
+      });
+    });
+  }catch(e){}
+
+  Object.keys(byTeam).forEach(function(k){
+    byTeam[k].injuries.sort(function(a,b){
+      var d2=rank(a.status)-rank(b.status);
+      return d2 !== 0 ? d2 : a.name.localeCompare(b.name);
+    });
+    byTeam[k].leaders = byTeam[k].leaders.slice(0,3);
+  });
+  return byTeam;
+}
+
+function teamCard(abbr, info){
+  var h = '<div class="tcard"><h4><span>'+abbr+'</span>'
+        + (info && info.record ? '<em>'+info.record+'</em>' : '')
+        + '</h4>';
+
+  h += '<div class="sect">Injury report</div>';
+  if(info && info.injuries.length){
+    h += '<ul>';
+    info.injuries.slice(0,12).forEach(function(i){
+      h += '<li><span class="who"><span class="pos">'+i.pos+'</span>'+i.name+'</span>'
+         + '<span class="st '+statusClass(i.status)+'">'+i.status+'</span></li>';
+    });
+    h += '</ul>';
+    if(info.injuries.length>12){
+      h += '<div class="none">'+(info.injuries.length-12)+' more listed</div>';
+    }
+  } else {
+    h += '<div class="none">Nothing posted</div>';
+  }
+
+  if(info && info.leaders.length){
+    h += '<div class="sect">Leaders</div><ul>';
+    info.leaders.forEach(function(l){
+      h += '<li><span class="who"><span class="pos">'+l.cat+'</span>'+l.who+'</span>'
+         + '<span class="st st-ok">'+l.val+'</span></li>';
+    });
+    h += '</ul>';
+  }
+
+  return h + '</div>';
 }
 
 function indexOdds(p){
@@ -499,6 +660,11 @@ function splitBar(g, homePct, label){
     +   '<div class="lbl r">'+homePct+' '+g.home+'</div>'
     + '</div>';
 }
+function moreBlock(g){
+  return '<button class="more" data-more="'+g.id+'" aria-expanded="false">'
+       + 'Injuries and team stats</button>'
+       + '<div class="detail hidden" id="det-'+g.id+'"></div>';
+}
 function kickText(g){
   return g.done ? 'Final'
        : g.live ? 'In progress'
@@ -551,6 +717,7 @@ function draw(){
     } else {
       html+='<div class="meta"><span>'+kickText(g)+'</span></div>';
     }
+    html+=moreBlock(g);
     html+='</div>';
   });
 
@@ -645,6 +812,7 @@ function drawStrategy(){
       } else if(mode==='lock'){
         out+='<div class="advice hold"><b>Take '+r.fav+'</b> \u2014 nearly everyone will. No points gained, but missing it is costly.</div>';
       }
+      out+=moreBlock(g);
       out+='</div>';
     });
     return out;
@@ -672,6 +840,34 @@ function drawStrategy(){
 
 /* ---------------- picks ---------------- */
 gamesEl.addEventListener('click', function(e){
+  var mb = e.target.closest ? e.target.closest('.more') : null;
+  if(mb){
+    var id = mb.getAttribute('data-more');
+    var panel = $('det-'+id);
+    var openNow = mb.getAttribute('aria-expanded')==='true';
+    if(openNow){
+      mb.setAttribute('aria-expanded','false');
+      panel.classList.add('hidden');
+      return;
+    }
+    mb.setAttribute('aria-expanded','true');
+    panel.classList.remove('hidden');
+    if(panel.getAttribute('data-filled')==='1') return;
+    panel.innerHTML='<div class="tcard"><div class="none">Loading\u2026</div></div>';
+    var g=null;
+    current.games.forEach(function(x){ if(x.id===id) g=x; });
+    fetchSummary(id).then(function(info){
+      if(!info){
+        panel.innerHTML='<div class="tcard"><div class="none">'
+          + 'ESPN has no report posted for this game yet.</div></div>';
+        return;
+      }
+      panel.innerHTML = teamCard(g.away, info[g.away]) + teamCard(g.home, info[g.home]);
+      panel.setAttribute('data-filled','1');
+    });
+    return;
+  }
+
   var btn = e.target.closest ? e.target.closest('.side') : null;
   if(!btn || btn.disabled) return;
   var gid=btn.getAttribute('data-g'), team=btn.getAttribute('data-t'), week=current.week;
