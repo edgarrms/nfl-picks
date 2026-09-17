@@ -12,21 +12,21 @@
   --paper:#E7EAE9; --card:#FBFBFA; --ink:#10191C; --ink-soft:#5A6B70;
   --rule:#C6CFCE; --home:#1F5F46; --away:#2B5878;
   --lock:#14563B; --toss:#8A6A12; --alert:#93331F;
-  --hit:#1F6F4A; --miss:#A24A32; --sel:#10191C;
+  --hit:#1F6F4A; --miss:#A24A32; --sel:#10191C; --flag:#8A3E12;
 }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]){
     --paper:#12181A; --card:#1A2224; --ink:#E9EEEC; --ink-soft:#93A5A6;
     --rule:#2E3A3C; --home:#3E9B72; --away:#4A85B5;
     --lock:#4FB489; --toss:#D2A73A; --alert:#D9755B;
-    --hit:#4FB489; --miss:#D9755B; --sel:#E9EEEC;
+    --hit:#4FB489; --miss:#D9755B; --sel:#E9EEEC; --flag:#E0965C;
   }
 }
 :root[data-theme="dark"]{
   --paper:#12181A; --card:#1A2224; --ink:#E9EEEC; --ink-soft:#93A5A6;
   --rule:#2E3A3C; --home:#3E9B72; --away:#4A85B5;
   --lock:#4FB489; --toss:#D2A73A; --alert:#D9755B;
-  --hit:#4FB489; --miss:#D9755B; --sel:#E9EEEC;
+  --hit:#4FB489; --miss:#D9755B; --sel:#E9EEEC; --flag:#E0965C;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
@@ -35,78 +35,87 @@ body{
   font-family:'Barlow',system-ui,-apple-system,'Segoe UI',sans-serif;
   font-size:16px; line-height:1.5; -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:760px;margin:0 auto;padding:24px 16px 80px}
+.wrap{max-width:760px;margin:0 auto;padding:22px 16px 80px}
 
 .masthead{
   display:flex;align-items:center;justify-content:space-between;gap:12px;
-  border-bottom:2px solid var(--ink);padding-bottom:10px;margin-bottom:14px;
+  border-bottom:2px solid var(--ink);padding-bottom:9px;margin-bottom:12px;
 }
-h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:38px;line-height:.95;margin:0}
+h1{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:36px;line-height:.95;margin:0}
 .record{text-align:right;flex-shrink:0}
-.record b{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:700;display:block;line-height:1}
-.record span{font-size:11.5px;color:var(--ink-soft);letter-spacing:.03em;text-transform:uppercase}
+.record b{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;display:block;line-height:1}
+.record span{font-size:11px;color:var(--ink-soft);letter-spacing:.04em;text-transform:uppercase}
 
-.controls{display:flex;gap:9px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.controls{display:flex;gap:8px;margin-bottom:10px}
 select{
   font-family:'Barlow Condensed',sans-serif;font-size:19px;font-weight:600;
-  padding:9px 13px;border:1px solid var(--rule);border-radius:3px;
-  background:var(--card);color:var(--ink);flex:1;min-width:130px;
+  padding:9px 12px;border:1px solid var(--rule);border-radius:3px;
+  background:var(--card);color:var(--ink);flex:1;
 }
 button{
   font-family:'Barlow Condensed',sans-serif;font-weight:600;font-size:16px;
-  padding:9px 16px;border:1px solid var(--rule);border-radius:3px;
+  padding:9px 15px;border:1px solid var(--rule);border-radius:3px;
   background:var(--card);color:var(--ink);cursor:pointer;
 }
 button:hover{border-color:var(--home)}
 button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--home);outline-offset:2px}
 button:disabled{cursor:default}
 
-details.settings{margin-bottom:16px}
-details.settings summary{
-  cursor:pointer;font-size:13.5px;color:var(--ink-soft);
-  padding:4px 0;list-style:none;
+.tabs{display:flex;border-bottom:1px solid var(--rule);margin-bottom:14px}
+.tabs button{
+  flex:1;background:none;border:none;border-bottom:3px solid transparent;
+  border-radius:0;padding:10px 4px;font-size:17px;color:var(--ink-soft);
 }
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--ink)}
+.tabs button:hover{color:var(--ink)}
+
+details.settings{margin-bottom:14px}
+details.settings summary{cursor:pointer;font-size:13px;color:var(--ink-soft);padding:3px 0;list-style:none}
 details.settings summary::-webkit-details-marker{display:none}
 details.settings summary::before{content:"\2699  "}
 .keybox{
   background:var(--card);border:1px solid var(--rule);border-radius:3px;
-  padding:13px;margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
+  padding:12px;margin-top:8px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;
 }
 input[type=password]{
   font-family:'Barlow',sans-serif;font-size:15px;padding:8px 10px;
   border:1px solid var(--rule);border-radius:3px;
-  background:var(--paper);color:var(--ink);flex:1;min-width:180px;
+  background:var(--paper);color:var(--ink);flex:1;min-width:170px;
 }
 .keybox p{width:100%;margin:0;font-size:12.5px;color:var(--ink-soft)}
 
 .note{
   border-left:3px solid var(--ink);background:var(--card);
-  padding:12px 14px;margin-bottom:16px;border-radius:0 3px 3px 0;font-size:14.5px;
+  padding:12px 14px;margin-bottom:14px;border-radius:0 3px 3px 0;font-size:14.5px;
 }
 .note.bad{border-left-color:var(--alert)}
 .note b{display:block;margin-bottom:2px}
 .note span{color:var(--ink-soft)}
 
-.summary{
-  display:flex;border:1px solid var(--rule);border-radius:3px;
-  overflow:hidden;background:var(--card);margin-bottom:16px;
-}
-.summary div{flex:1;padding:10px 12px;border-right:1px solid var(--rule)}
+.summary{display:flex;border:1px solid var(--rule);border-radius:3px;overflow:hidden;background:var(--card);margin-bottom:14px}
+.summary div{flex:1;padding:10px 11px;border-right:1px solid var(--rule)}
 .summary div:last-child{border-right:none}
-.summary b{font-family:'Barlow Condensed',sans-serif;font-size:25px;font-weight:700;display:block;line-height:1}
+.summary b{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:700;display:block;line-height:1}
 .summary span{font-size:11.5px;color:var(--ink-soft)}
 
-.game{background:var(--card);border:1px solid var(--rule);border-top:none;padding:12px 13px 13px}
-.game:first-of-type{border-top:1px solid var(--rule)}
+.grouphead{
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:18px;
+  padding:18px 0 5px;
+}
+.grouphead small{display:block;font-family:'Barlow',sans-serif;font-weight:400;font-size:13px;color:var(--ink-soft);letter-spacing:0;text-transform:none}
 
-.pickrow{display:flex;gap:8px;margin-bottom:9px}
+.game{background:var(--card);border:1px solid var(--rule);border-top:none;padding:11px 13px 12px}
+.game.first{border-top:1px solid var(--rule)}
+
+.pickrow{display:flex;gap:8px;margin-bottom:8px}
 .side{
   flex:1;display:flex;align-items:center;justify-content:space-between;gap:6px;
   padding:9px 11px;border:1px solid var(--rule);border-radius:3px;
-  background:var(--paper);color:var(--ink);cursor:pointer;text-align:left;
+  background:var(--paper);color:var(--ink);cursor:pointer;
   font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:600;
 }
 .side .sc{font-size:19px;color:var(--ink-soft);font-weight:700}
+.side .mark{font-size:15px;font-weight:700}
 .side.on{border-color:var(--sel);border-width:2px;padding:8px 10px;background:var(--card)}
 .side.on .mark{color:var(--sel)}
 .side.hit{border-color:var(--hit);border-width:2px;padding:8px 10px}
@@ -114,24 +123,32 @@ input[type=password]{
 .side.miss{border-color:var(--miss);border-width:2px;padding:8px 10px}
 .side.miss .mark{color:var(--miss)}
 .side.won{box-shadow:inset 3px 0 0 var(--ink)}
-.side .mark{font-size:15px;font-weight:700}
 .side:disabled{cursor:default}
 
 .bar{position:relative;height:20px;border-radius:2px;overflow:hidden;display:flex}
-.bar .a{background:var(--away)}
-.bar .h{background:var(--home)}
+.bar .a{background:var(--away)} .bar .h{background:var(--home)}
 .bar .mid{position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,255,255,.5)}
 .bar .lbl{position:absolute;top:0;line-height:20px;color:#fff;font-family:'Barlow Condensed',sans-serif;font-size:12px;font-weight:600}
 .bar .l{left:7px} .bar .r{right:7px}
+.barlabel{font-size:11.5px;color:var(--ink-soft);margin:6px 0 2px;letter-spacing:.03em;text-transform:uppercase}
 
-.meta{display:flex;gap:12px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin-top:7px;align-items:center}
+.meta{display:flex;gap:11px;flex-wrap:wrap;font-size:12.5px;color:var(--ink-soft);margin-top:7px;align-items:center}
 .tag{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px}
 .t-lock{color:var(--lock)} .t-strong{color:var(--home)}
 .t-lean{color:var(--toss)} .t-flip{color:var(--alert)}
+.split{color:var(--flag);font-weight:600}
+
+.advice{
+  margin-top:8px;padding:9px 11px;border-radius:3px;
+  background:var(--paper);border:1px dashed var(--rule);font-size:13.5px;
+}
+.advice b{font-family:'Barlow Condensed',sans-serif;font-size:15px}
+.advice.flip b{color:var(--flag)}
+.advice.hold b{color:var(--lock)}
 
 .season{margin-top:26px;padding-top:18px;border-top:2px solid var(--ink)}
 .season h2{font-family:'Barlow Condensed',sans-serif;font-size:21px;font-weight:700;margin:0 0 3px}
-.season p{margin:0 0 11px;font-size:13.5px;color:var(--ink-soft)}
+.season p{margin:0 0 10px;font-size:13.5px;color:var(--ink-soft)}
 table{width:100%;border-collapse:collapse;font-size:14.5px}
 th,td{text-align:left;padding:7px 9px;border-bottom:1px solid var(--rule)}
 th{font-family:'Barlow Condensed',sans-serif;font-size:13px;color:var(--ink-soft);text-transform:uppercase;letter-spacing:.04em}
@@ -141,8 +158,9 @@ tr.now td{background:var(--card)}
 footer{margin-top:26px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
 .hidden{display:none}
 @media (max-width:560px){
-  h1{font-size:30px}
+  h1{font-size:29px}
   .side{font-size:19px}
+  .tabs button{font-size:15px}
 }
 </style>
 </head>
@@ -151,15 +169,18 @@ footer{margin-top:26px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
 
   <div class="masthead">
     <h1>Pick Sheet</h1>
-    <div class="record">
-      <b id="seasonRec">&mdash;</b>
-      <span>season</span>
-    </div>
+    <div class="record"><b id="seasonRec">&mdash;</b><span>season</span></div>
   </div>
 
   <div class="controls">
     <select id="week" aria-label="Week"></select>
     <button id="reload">Refresh</button>
+  </div>
+
+  <div class="tabs" role="tablist">
+    <button role="tab" data-tab="spread"   aria-selected="true">Spread</button>
+    <button role="tab" data-tab="model"    aria-selected="false">Model</button>
+    <button role="tab" data-tab="strategy" aria-selected="false">Strategy</button>
   </div>
 
   <details class="settings">
@@ -168,7 +189,7 @@ footer{margin-top:26px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
       <input type="password" id="key" placeholder="paste key" autocomplete="off" spellcheck="false">
       <button id="savekey">Save</button>
       <button id="clearkey">Clear</button>
-      <p>Stored only in this browser. Needed for betting lines on upcoming games; scores and results work without it.</p>
+      <p>Stored only in this browser. Needed for the Spread tab. Scores and the Model tab work without it.</p>
     </div>
   </details>
 
@@ -182,20 +203,15 @@ footer{margin-top:26px;font-size:12.5px;color:var(--ink-soft);line-height:1.6}
     <table id="seasonTable"><tbody></tbody></table>
   </div>
 
-  <footer>
-    Scores and schedule from ESPN. Betting lines from The Odds API, with the sportsbook margin removed so percentages reflect true expected odds. Tap a team to record your pick.
-  </footer>
+  <footer id="foot"></footer>
 
 </div>
 
 <script>
 'use strict';
 
-var SEASON = 2026;
-var WEEKS = 18;
-
+var SEASON = 2026, WEEKS = 18;
 var FIX = { 'ARI':'ARZ', 'WSH':'WAS' };
-
 var NAMES = {
   'Arizona Cardinals':'ARZ','Atlanta Falcons':'ATL','Baltimore Ravens':'BAL',
   'Buffalo Bills':'BUF','Carolina Panthers':'CAR','Chicago Bears':'CHI',
@@ -211,128 +227,158 @@ var NAMES = {
 };
 
 function $(id){ return document.getElementById(id); }
-var weekSel = $('week'), noteEl = $('note'), gamesEl = $('games'),
-    sumEl = $('summary'), keyBox = $('key');
+var weekSel=$('week'), noteEl=$('note'), gamesEl=$('games'),
+    sumEl=$('summary'), keyBox=$('key'), footEl=$('foot');
+
+var TAB = 'spread';
 
 /* ---------------- storage ---------------- */
-function readStore(name, fallback){
-  try { return JSON.parse(localStorage.getItem(name)) || fallback; }
-  catch(e){ return fallback; }
-}
-function writeStore(name, obj){
-  try { localStorage.setItem(name, JSON.stringify(obj)); } catch(e){}
-}
-var PICKS   = readStore('picks:'   + SEASON, {});
-var RESULTS = readStore('results:' + SEASON, {});
+function readStore(n,f){ try{ return JSON.parse(localStorage.getItem(n)) || f; }catch(e){ return f; } }
+function writeStore(n,o){ try{ localStorage.setItem(n, JSON.stringify(o)); }catch(e){} }
+var PICKS   = readStore('picks:'+SEASON, {});
+var RESULTS = readStore('results:'+SEASON, {});
+var FPICACHE= readStore('fpi:'+SEASON, {});
+function savePicks(){ writeStore('picks:'+SEASON, PICKS); }
+function saveResults(){ writeStore('results:'+SEASON, RESULTS); }
+function saveFpi(){ writeStore('fpi:'+SEASON, FPICACHE); }
 
-function savePicks(){   writeStore('picks:'   + SEASON, PICKS); }
-function saveResults(){ writeStore('results:' + SEASON, RESULTS); }
-
-function getKey(){ try { return localStorage.getItem('oddsKey') || ''; } catch(e){ return ''; } }
+function getKey(){ try{ return localStorage.getItem('oddsKey')||''; }catch(e){ return ''; } }
 keyBox.value = getKey();
-
 $('savekey').addEventListener('click', function(){
-  try { localStorage.setItem('oddsKey', keyBox.value.trim()); } catch(e){}
+  try{ localStorage.setItem('oddsKey', keyBox.value.trim()); }catch(e){}
   load();
 });
 $('clearkey').addEventListener('click', function(){
-  try { localStorage.removeItem('oddsKey'); } catch(e){}
-  keyBox.value = '';
-  say('Key cleared', 'Scores and results still work without it.', false);
+  try{ localStorage.removeItem('oddsKey'); }catch(e){}
+  keyBox.value=''; say('Key cleared','The Model tab and scores still work without it.',false);
 });
 
 /* ---------------- helpers ---------------- */
-function say(title, body, bad){
-  noteEl.className = 'note' + (bad ? ' bad' : '');
-  noteEl.innerHTML = '<b>' + title + '</b><span>' + body + '</span>';
+function say(t,b,bad){
+  noteEl.className='note'+(bad?' bad':'');
+  noteEl.innerHTML='<b>'+t+'</b><span>'+b+'</span>';
   noteEl.classList.remove('hidden');
 }
 function hideNote(){ noteEl.classList.add('hidden'); }
-
-function implied(price){
-  return price > 0 ? 100/(price+100) : Math.abs(price)/(Math.abs(price)+100);
-}
+function implied(p){ return p>0 ? 100/(p+100) : Math.abs(p)/(Math.abs(p)+100); }
 function median(a){
-  if (!a.length) return null;
-  var s = a.slice().sort(function(x,y){ return x-y; });
-  var m = Math.floor(s.length/2);
-  return s.length % 2 ? s[m] : (s[m-1]+s[m])/2;
+  if(!a.length) return null;
+  var s=a.slice().sort(function(x,y){return x-y;}), m=Math.floor(s.length/2);
+  return s.length%2 ? s[m] : (s[m-1]+s[m])/2;
 }
-function code(abbr){ abbr = (abbr||'').toUpperCase(); return FIX[abbr] || abbr; }
+function code(x){ x=(x||'').toUpperCase(); return FIX[x]||x; }
 
-/* ---------------- week dropdown ---------------- */
-for (var w = 1; w <= WEEKS; w++){
-  var o = document.createElement('option');
-  o.value = w; o.textContent = 'Week ' + w;
-  weekSel.appendChild(o);
+for (var w=1; w<=WEEKS; w++){
+  var o=document.createElement('option');
+  o.value=w; o.textContent='Week '+w; weekSel.appendChild(o);
 }
 weekSel.addEventListener('change', load);
-$('reload').addEventListener('click', load);
+$('reload').addEventListener('click', function(){ FPICACHE={}; saveFpi(); load(); });
+
+var tabBtns = document.querySelectorAll('.tabs button');
+Array.prototype.forEach.call(tabBtns, function(b){
+  b.addEventListener('click', function(){
+    Array.prototype.forEach.call(tabBtns, function(x){ x.setAttribute('aria-selected','false'); });
+    b.setAttribute('aria-selected','true');
+    TAB = b.getAttribute('data-tab');
+    draw();
+  });
+});
 
 /* ---------------- data ---------------- */
 function espnScoreboard(week){
-  var path = '/apis/site/v2/sports/football/nfl/scoreboard?dates='
-           + SEASON + '&seasontype=2&week=' + week + '&limit=100';
-  return fetch('https://site.api.espn.com' + path)
-    .then(function(r){ if (!r.ok) throw new Error('espn'); return r.json(); })
+  var path='/apis/site/v2/sports/football/nfl/scoreboard?dates='+SEASON+'&seasontype=2&week='+week+'&limit=100';
+  return fetch('https://site.api.espn.com'+path)
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
     .catch(function(){
-      return fetch('https://site.web.api.espn.com' + path).then(function(r){
-        if (!r.ok) throw new Error('ESPN did not answer');
-        return r.json();
+      return fetch('https://site.web.api.espn.com'+path).then(function(r){
+        if(!r.ok) throw new Error('ESPN did not answer'); return r.json();
       });
     });
 }
 
 function fetchOdds(){
-  var k = getKey();
-  if (!k) return Promise.resolve(null);
-  var url = 'https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
-          + '?apiKey=' + encodeURIComponent(k)
-          + '&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso';
+  var k=getKey();
+  if(!k) return Promise.resolve(null);
+  var url='https://api.the-odds-api.com/v4/sports/americanfootball_nfl/odds'
+        + '?apiKey='+encodeURIComponent(k)
+        + '&regions=us&markets=h2h,spreads,totals&oddsFormat=american&dateFormat=iso';
   return fetch(url).then(function(r){
-    if (r.status === 401) throw new Error('bad key');
-    if (!r.ok) throw new Error('odds ' + r.status);
+    if(r.status===401) throw new Error('bad key');
+    if(!r.ok) throw new Error('odds '+r.status);
     return r.json();
-  }).catch(function(e){ return { _err: String(e.message || e) }; });
+  }).catch(function(e){ return { _err:String(e.message||e) }; });
 }
 
-function indexOdds(payload){
-  var out = {};
-  if (!payload || payload._err || !payload.length) return out;
-  payload.forEach(function(ev){
-    var a = NAMES[ev.away_team], h = NAMES[ev.home_team];
-    if (!a || !h) return;
-    var probs = [], spreads = [], totals = [], books = 0;
+function pullProjection(node){
+  if(!node) return null;
+  if(node.gameProjection!=null){
+    var v=parseFloat(node.gameProjection);
+    if(!isNaN(v)) return v;
+  }
+  var st=node.statistics;
+  if(st && st.length){
+    for(var i=0;i<st.length;i++){
+      if(st[i].name==='gameProjection'){
+        var q=parseFloat(st[i].value!=null?st[i].value:st[i].displayValue);
+        if(!isNaN(q)) return q;
+      }
+    }
+  }
+  return null;
+}
+
+/* ESPN FPI game projection, one call per game, cached */
+function fetchFpi(id){
+  var hit=FPICACHE[id];
+  if(hit && (Date.now()-hit.t) < 6*3600*1000) return Promise.resolve(hit.v);
+  var url='https://sports.core.api.espn.com/v2/sports/football/leagues/nfl/events/'
+        + id + '/competitions/' + id + '/predictor';
+  return fetch(url)
+    .then(function(r){ if(!r.ok) throw 0; return r.json(); })
+    .then(function(d){
+      var v = pullProjection(d.homeTeam);
+      FPICACHE[id]={ t:Date.now(), v:v };
+      return v;
+    })
+    .catch(function(){ return null; });
+}
+
+function indexOdds(p){
+  var out={};
+  if(!p || p._err || !p.length) return out;
+  p.forEach(function(ev){
+    var a=NAMES[ev.away_team], h=NAMES[ev.home_team];
+    if(!a||!h) return;
+    var probs=[],spreads=[],totals=[],books=0;
     (ev.bookmakers||[]).forEach(function(bk){
-      var used = false;
+      var used=false;
       (bk.markets||[]).forEach(function(mk){
-        var outs = mk.outcomes || [];
-        if (mk.key === 'h2h' && outs.length === 2){
-          var pH = null, pA = null;
+        var outs=mk.outcomes||[];
+        if(mk.key==='h2h' && outs.length===2){
+          var pH=null,pA=null;
           outs.forEach(function(oc){
-            if (oc.name === ev.home_team) pH = implied(oc.price);
-            if (oc.name === ev.away_team) pA = implied(oc.price);
+            if(oc.name===ev.home_team) pH=implied(oc.price);
+            if(oc.name===ev.away_team) pA=implied(oc.price);
           });
-          if (pH !== null && pA !== null){ probs.push(pH/(pH+pA)); used = true; }
+          if(pH!==null&&pA!==null){ probs.push(pH/(pH+pA)); used=true; }
         }
-        if (mk.key === 'spreads'){
+        if(mk.key==='spreads'){
           outs.forEach(function(oc){
-            if (oc.name === ev.home_team && typeof oc.point === 'number'){
-              spreads.push(oc.point); used = true;
-            }
+            if(oc.name===ev.home_team && typeof oc.point==='number'){ spreads.push(oc.point); used=true; }
           });
         }
-        if (mk.key === 'totals'){
-          for (var i=0;i<outs.length;i++){
-            if (typeof outs[i].point === 'number'){ totals.push(outs[i].point); used = true; break; }
+        if(mk.key==='totals'){
+          for(var i=0;i<outs.length;i++){
+            if(typeof outs[i].point==='number'){ totals.push(outs[i].point); used=true; break; }
           }
         }
       });
-      if (used) books++;
+      if(used) books++;
     });
-    if (!probs.length) return;
-    out[a + '|' + h] = {
-      homePct: Math.round(median(probs) * 100),
+    if(!probs.length) return;
+    out[a+'|'+h]={
+      homePct: Math.round(median(probs)*100),
       spread: median(spreads),
       total: median(totals),
       books: books
@@ -341,223 +387,334 @@ function indexOdds(payload){
   return out;
 }
 
-/* ---------------- render ---------------- */
-var current = { week: null, games: [] };
+/* ---------------- load ---------------- */
+var current={ week:null, games:[] };
 
 function load(){
-  var week = parseInt(weekSel.value, 10);
-  current.week = week;
-  gamesEl.innerHTML = '';
-  sumEl.classList.add('hidden');
-  say('Loading', 'Getting week ' + week + '.', false);
+  var week=parseInt(weekSel.value,10);
+  current.week=week;
+  gamesEl.innerHTML=''; sumEl.classList.add('hidden');
+  say('Loading','Getting week '+week+'.',false);
 
-  Promise.all([ espnScoreboard(week), fetchOdds() ])
-    .then(function(res){
-      var board = res[0];
-      var oddsRaw = res[1];
-      var oddsIdx = indexOdds(oddsRaw);
-      var oddsErr = oddsRaw && oddsRaw._err;
+  Promise.all([ espnScoreboard(week), fetchOdds() ]).then(function(res){
+    var board=res[0], oddsRaw=res[1];
+    var oddsIdx=indexOdds(oddsRaw), oddsErr=oddsRaw && oddsRaw._err;
 
-      var games = (board.events || []).map(function(ev){
-        var comp = (ev.competitions && ev.competitions[0]) || {};
-        var cs = comp.competitors || [];
-        var home = {}, away = {};
-        cs.forEach(function(c){
-          if (c.homeAway === 'home') home = c;
-          if (c.homeAway === 'away') away = c;
-        });
-        var st = (ev.status && ev.status.type) || {};
-        var h = code(home.team && home.team.abbreviation);
-        var a = code(away.team && away.team.abbreviation);
-        return {
-          id: String(ev.id),
-          away: a, home: h,
-          awayScore: (away.score !== undefined && away.score !== null) ? parseInt(away.score,10) : null,
-          homeScore: (home.score !== undefined && home.score !== null) ? parseInt(home.score,10) : null,
-          done: !!st.completed,
-          live: st.state === 'in',
-          kick: new Date(ev.date),
-          odds: oddsIdx[a + '|' + h] || null
-        };
+    var games=(board.events||[]).map(function(ev){
+      var comp=(ev.competitions&&ev.competitions[0])||{};
+      var cs=comp.competitors||[], home={}, away={};
+      cs.forEach(function(c){
+        if(c.homeAway==='home') home=c;
+        if(c.homeAway==='away') away=c;
       });
-
-      games.sort(function(x,y){ return x.kick - y.kick; });
-      current.games = games;
-
-      if (!RESULTS[week]) RESULTS[week] = {};
-      games.forEach(function(g){
-        if (g.done && g.awayScore !== null && g.homeScore !== null && g.awayScore !== g.homeScore){
-          RESULTS[week][g.id] = { w: g.awayScore > g.homeScore ? g.away : g.home };
-        }
-      });
-      saveResults();
-
-      if (!games.length){
-        say('Nothing scheduled', 'ESPN has no games listed for week ' + week + '.', false);
-        drawSeason();
-        return;
-      }
-
-      draw();
-      drawSeason();
-
-      var anyOpen = games.some(function(g){ return !g.done; });
-      if (oddsErr === 'bad key'){
-        say('Key was rejected', 'Scores are showing, but the betting lines need a working key. Open the key box above and paste it again.', true);
-      } else if (!getKey() && anyOpen){
-        say('No lines yet', 'Add your Odds API key above to see win percentages on games that have not started.', false);
-      } else {
-        hideNote();
-      }
-    })
-    .catch(function(e){
-      say('Could not load', 'ESPN did not answer. Check your connection and tap Refresh.', true);
+      var st=(ev.status&&ev.status.type)||{};
+      var h=code(home.team&&home.team.abbreviation), a=code(away.team&&away.team.abbreviation);
+      return {
+        id:String(ev.id), away:a, home:h,
+        awayScore:(away.score!=null)?parseInt(away.score,10):null,
+        homeScore:(home.score!=null)?parseInt(home.score,10):null,
+        done:!!st.completed, live:st.state==='in',
+        kick:new Date(ev.date),
+        odds:oddsIdx[a+'|'+h]||null,
+        fpiHome:null
+      };
     });
+    games.sort(function(x,y){ return x.kick-y.kick; });
+    current.games=games;
+
+    if(!RESULTS[week]) RESULTS[week]={};
+    games.forEach(function(g){
+      if(g.done && g.awayScore!=null && g.homeScore!=null && g.awayScore!==g.homeScore){
+        RESULTS[week][g.id]={ w: g.awayScore>g.homeScore ? g.away : g.home };
+      }
+    });
+    saveResults();
+
+    if(!games.length){
+      say('Nothing scheduled','ESPN has no games listed for week '+week+'.',false);
+      drawSeason(); return;
+    }
+
+    draw(); drawSeason();
+
+    var anyOpen=games.some(function(g){ return !g.done; });
+    if(oddsErr==='bad key'){
+      say('Key was rejected','Scores are showing, but the Spread tab needs a working key. Open the key box and paste it again.',true);
+    } else if(!getKey() && anyOpen){
+      say('No lines yet','Add your Odds API key above to fill in the Spread and Strategy tabs.',false);
+    } else { hideNote(); }
+
+    // FPI in the background, then redraw
+    var open=games.filter(function(g){ return !g.done; });
+    if(open.length){
+      Promise.all(open.map(function(g){
+        return fetchFpi(g.id).then(function(v){ g.fpiHome=v; });
+      })).then(function(){
+        saveFpi();
+        if(games.some(function(g){ return g.fpiHome!=null; })) draw();
+      });
+    }
+  }).catch(function(){
+    say('Could not load','ESPN did not answer. Check your connection and tap Refresh.',true);
+  });
 }
 
 function tier(c){
-  if (c >= 75) return ['t-lock','Safe'];
-  if (c >= 65) return ['t-strong','Solid'];
-  if (c >= 57) return ['t-lean','Lean'];
+  if(c>=75) return ['t-lock','Safe'];
+  if(c>=65) return ['t-strong','Solid'];
+  if(c>=57) return ['t-lean','Lean'];
   return ['t-flip','Coin flip'];
 }
 
-function draw(){
-  var week = current.week;
-  var picks = PICKS[week] || {};
-  var html = '';
-  var made = 0, right = 0, finished = 0;
-
-  current.games.forEach(function(g){
-    var mine = picks[g.id] || null;
-    var won = null;
-    if (g.done && g.awayScore !== null && g.homeScore !== null && g.awayScore !== g.homeScore){
-      won = g.awayScore > g.homeScore ? g.away : g.home;
-    }
-    if (mine) made++;
-    if (won){
-      finished++;
-      if (mine && mine === won) right++;
-    }
-
-    function side(team, score){
-      var cls = 'side', mark = '';
-      if (won){
-        if (mine === team){
-          cls += (mine === won) ? ' hit' : ' miss';
-          mark = (mine === won) ? '\u2713' : '\u2715';
-        }
-        if (team === won) cls += ' won';
-      } else if (mine === team){
-        cls += ' on';
-        mark = '\u2713';
-      }
-      var sc = (score !== null && (g.done || g.live))
-             ? '<span class="sc">' + score + '</span>' : '';
-      return '<button class="' + cls + '" data-g="' + g.id + '" data-t="' + team + '"'
-           + (won ? ' disabled' : '') + '>'
-           + '<span>' + team + '</span>'
-           + (sc || (mark ? '<span class="mark">' + mark + '</span>' : ''))
-           + '</button>';
-    }
-
-    html += '<div class="game">'
-         +   '<div class="pickrow">'
-         +     side(g.away, g.awayScore)
-         +     side(g.home, g.homeScore)
-         +   '</div>';
-
-    if (!g.done && g.odds){
-      var o = g.odds, hp = o.homePct, ap = 100 - hp;
-      var t = tier(Math.max(hp, ap));
-      var fav = hp >= 50 ? g.home : g.away;
-      html += '<div class="bar" role="img" aria-label="' + g.away + ' ' + ap + ' percent, ' + g.home + ' ' + hp + ' percent">'
-           +    '<div class="a" style="width:' + ap + '%"></div>'
-           +    '<div class="h" style="width:' + hp + '%"></div>'
-           +    '<div class="mid"></div>'
-           +    '<div class="lbl l">' + g.away + ' ' + ap + '</div>'
-           +    '<div class="lbl r">' + hp + ' ' + g.home + '</div>'
-           +  '</div>'
-           +  '<div class="meta">'
-           +    '<span class="tag ' + t[0] + '">' + t[1] + ' \u00b7 ' + fav + '</span>'
-           +    (typeof o.spread === 'number' && o.spread !== 0
-                  ? '<span>' + (o.spread < 0 ? g.home : g.away) + ' by ' + Math.abs(o.spread) + '</span>' : '')
-           +    (typeof o.total === 'number' ? '<span>total ' + o.total + '</span>' : '')
-           +    '<span>' + g.kick.toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'}) + '</span>'
-           +  '</div>';
-    } else {
-      var when = g.done ? 'Final'
-               : g.live ? 'In progress'
-               : g.kick.toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'});
-      html += '<div class="meta"><span>' + when + '</span></div>';
-    }
-
-    html += '</div>';
-  });
-
-  gamesEl.innerHTML = html;
-
-  sumEl.innerHTML =
-      '<div><b>' + made + ' / ' + current.games.length + '</b><span>picks made</span></div>'
-    + '<div><b>' + right + '</b><span>correct</span></div>'
-    + '<div><b>' + finished + '</b><span>games final</span></div>';
-  sumEl.classList.remove('hidden');
+/* ---------------- shared pieces ---------------- */
+function winnerOf(g){
+  if(g.done && g.awayScore!=null && g.homeScore!=null && g.awayScore!==g.homeScore){
+    return g.awayScore>g.homeScore ? g.away : g.home;
+  }
+  return null;
+}
+function pickRow(g, mine, won){
+  function side(team, score){
+    var cls='side', mark='';
+    if(won){
+      if(mine===team){ cls += (mine===won)?' hit':' miss'; mark=(mine===won)?'\u2713':'\u2715'; }
+      if(team===won) cls+=' won';
+    } else if(mine===team){ cls+=' on'; mark='\u2713'; }
+    var sc=(score!=null && (g.done||g.live)) ? '<span class="sc">'+score+'</span>' : '';
+    return '<button class="'+cls+'" data-g="'+g.id+'" data-t="'+team+'"'+(won?' disabled':'')+'>'
+         + '<span>'+team+'</span>'
+         + (sc || (mark ? '<span class="mark">'+mark+'</span>' : ''))
+         + '</button>';
+  }
+  return '<div class="pickrow">'+side(g.away,g.awayScore)+side(g.home,g.homeScore)+'</div>';
+}
+function splitBar(g, homePct, label){
+  var ap=100-homePct;
+  return (label?'<div class="barlabel">'+label+'</div>':'')
+    + '<div class="bar" role="img" aria-label="'+g.away+' '+ap+' percent, '+g.home+' '+homePct+' percent">'
+    +   '<div class="a" style="width:'+ap+'%"></div>'
+    +   '<div class="h" style="width:'+homePct+'%"></div>'
+    +   '<div class="mid"></div>'
+    +   '<div class="lbl l">'+g.away+' '+ap+'</div>'
+    +   '<div class="lbl r">'+homePct+' '+g.home+'</div>'
+    + '</div>';
+}
+function kickText(g){
+  return g.done ? 'Final'
+       : g.live ? 'In progress'
+       : g.kick.toLocaleString([], {weekday:'short', hour:'numeric', minute:'2-digit'});
 }
 
+/* ---------------- draw ---------------- */
+function draw(){
+  if(TAB==='strategy') return drawStrategy();
+  var week=current.week, picks=PICKS[week]||{};
+  var html='', made=0, right=0, finished=0, first=true;
+
+  current.games.forEach(function(g){
+    var mine=picks[g.id]||null, won=winnerOf(g);
+    if(mine) made++;
+    if(won){ finished++; if(mine===won) right++; }
+
+    html+='<div class="game'+(first?' first':'')+'">'; first=false;
+    html+=pickRow(g,mine,won);
+
+    if(!g.done){
+      if(TAB==='spread' && g.odds){
+        var hp=g.odds.homePct, t=tier(Math.max(hp,100-hp));
+        var fav=hp>=50?g.home:g.away;
+        html+=splitBar(g,hp,'')
+            + '<div class="meta"><span class="tag '+t[0]+'">'+t[1]+' \u00b7 '+fav+'</span>'
+            + (typeof g.odds.spread==='number' && g.odds.spread!==0
+                ? '<span>'+(g.odds.spread<0?g.home:g.away)+' by '+Math.abs(g.odds.spread)+'</span>':'')
+            + (typeof g.odds.total==='number' ? '<span>total '+g.odds.total+'</span>':'')
+            + '<span>'+kickText(g)+'</span></div>';
+      } else if(TAB==='model' && g.fpiHome!=null){
+        var fp=Math.round(g.fpiHome), ft=tier(Math.max(fp,100-fp));
+        var ffav=fp>=50?g.home:g.away;
+        var disagree='';
+        if(g.odds){
+          var mh=g.odds.homePct;
+          if((mh>=50)!==(fp>=50)){
+            disagree='<span class="split">FPI takes '+ffav+', market does not</span>';
+          } else if(Math.abs(mh-fp)>=10){
+            disagree='<span class="split">'+Math.abs(Math.round(mh-fp))+' points apart</span>';
+          }
+        }
+        html+=splitBar(g,fp,'ESPN FPI')
+            + '<div class="meta"><span class="tag '+ft[0]+'">'+ft[1]+' \u00b7 '+ffav+'</span>'
+            + disagree + '<span>'+kickText(g)+'</span></div>';
+      } else {
+        var missing = (TAB==='model') ? 'FPI not posted yet' : (getKey()?'no line posted':'add your key');
+        html+='<div class="meta"><span>'+kickText(g)+'</span><span>'+missing+'</span></div>';
+      }
+    } else {
+      html+='<div class="meta"><span>'+kickText(g)+'</span></div>';
+    }
+    html+='</div>';
+  });
+
+  gamesEl.innerHTML=html;
+  sumEl.innerHTML='<div><b>'+made+' / '+current.games.length+'</b><span>picks made</span></div>'
+                + '<div><b>'+right+'</b><span>correct</span></div>'
+                + '<div><b>'+finished+'</b><span>games final</span></div>';
+  sumEl.classList.remove('hidden');
+
+  footEl.innerHTML = TAB==='model'
+    ? 'ESPN\u2019s Football Power Index rates teams on efficiency rather than betting money, so it is a second opinion rather than the same number restated. Where it splits from the market, the game is worth a longer look.'
+    : 'The moneyline and the point spread are the same number expressed two ways, so this tab is the betting market\u2019s opinion. Margin removed, so percentages reflect true expected odds.';
+}
+
+/* ---------------- strategy ---------------- */
+function drawStrategy(){
+  var week=current.week, picks=PICKS[week]||{};
+  var open=current.games.filter(function(g){ return !g.done && g.odds; });
+
+  if(!open.length){
+    gamesEl.innerHTML='';
+    sumEl.classList.add('hidden');
+    say(getKey()?'Nothing to plan':'Add your key',
+        getKey() ? 'Every game this week has finished, or no lines are posted yet.'
+                 : 'The Strategy tab needs betting lines. Open the key box above and paste your Odds API key.',
+        false);
+    footEl.innerHTML='';
+    return;
+  }
+  hideNote();
+
+  var rows=open.map(function(g){
+    var hp=g.odds.homePct;
+    var favIsHome = hp>=50;
+    var favPct = favIsHome?hp:100-hp;
+    var fav = favIsHome?g.home:g.away;
+    var dog = favIsHome?g.away:g.home;
+    var dogMarket = 100-favPct;
+    var dogFpi = null;
+    if(g.fpiHome!=null){ dogFpi = favIsHome ? (100-g.fpiHome) : g.fpiHome; }
+    return {
+      g:g, fav:fav, dog:dog, favPct:favPct,
+      dogMarket:dogMarket, dogFpi:dogFpi,
+      edge: (dogFpi!=null) ? (dogFpi-dogMarket) : null
+    };
+  });
+
+  var locks = rows.filter(function(r){ return r.favPct>=72; });
+  var solid = rows.filter(function(r){ return r.favPct<72 && r.favPct>=62; });
+  var close = rows.filter(function(r){ return r.favPct<62; });
+
+  close.sort(function(a,b){
+    var ae=(a.edge==null?-99:a.edge), be=(b.edge==null?-99:b.edge);
+    if(be!==ae) return be-ae;
+    return a.favPct-b.favPct;
+  });
+
+  var flips = close.filter(function(r){ return r.edge!=null && r.edge>0; }).slice(0,3);
+  if(!flips.length) flips = close.slice(0,2);
+  var flipIds = {};
+  flips.forEach(function(r){ flipIds[r.g.id]=true; });
+
+  sumEl.innerHTML =
+      '<div><b>'+(locks.length+solid.length)+'</b><span>match the crowd</span></div>'
+    + '<div><b style="color:var(--flag)">'+flips.length+'</b><span>break away here</span></div>'
+    + '<div><b>'+close.length+'</b><span>close games</span></div>';
+  sumEl.classList.remove('hidden');
+
+  var html='';
+
+  function block(title, sub, list, mode){
+    if(!list.length) return '';
+    var out='<div class="grouphead">'+title+'<small>'+sub+'</small></div>';
+    var first=true;
+    list.forEach(function(r){
+      var g=r.g, mine=picks[g.id]||null;
+      out+='<div class="game'+(first?' first':'')+'">'; first=false;
+      out+=pickRow(g,mine,null);
+      out+=splitBar(g,g.odds.homePct,'');
+      out+='<div class="meta"><span>'+r.fav+' '+r.favPct+'%</span>'
+         + (r.dogFpi!=null ? '<span>FPI has '+r.dog+' at '+Math.round(r.dogFpi)+'%</span>' : '<span>FPI pending</span>')
+         + '<span>'+kickText(g)+'</span></div>';
+
+      if(mode==='flip'){
+        var why = (r.edge!=null && r.edge>0)
+          ? 'FPI rates '+r.dog+' '+Math.round(r.edge)+' points higher than the market does.'
+          : 'Closest game on the board, so the cheapest place to differ.';
+        out+='<div class="advice flip"><b>Take '+r.dog+'</b> \u2014 '+why
+           + ' Most of the pool will be on '+r.fav+', so this is where a week gets won or lost.</div>';
+      } else if(mode==='consider'){
+        out+='<div class="advice"><b>'+r.fav+' is the safer side</b> \u2014 but at '+r.favPct+'% this one is near enough to a toss-up that going the other way costs you little.</div>';
+      } else if(mode==='lock'){
+        out+='<div class="advice hold"><b>Take '+r.fav+'</b> \u2014 nearly everyone will. No points gained, but missing it is costly.</div>';
+      }
+      out+='</div>';
+    });
+    return out;
+  }
+
+  html += block('Break away here',
+                'Where you can actually win the week',
+                flips, 'flip');
+
+  html += block('Close games you could also flip',
+                'Cheap to differ, but less support for it',
+                close.filter(function(r){ return !flipIds[r.g.id]; }), 'consider');
+
+  html += block('Take the favorite',
+                'Clear enough that the whole pool will agree',
+                solid.concat(locks).sort(function(a,b){ return b.favPct-a.favPct; }), 'lock');
+
+  gamesEl.innerHTML=html;
+
+  footEl.innerHTML='Built for winning weeks rather than season points, so it leans contrarian on purpose. '
+    + 'With 30 players, the heavy favorites only keep you level with everyone else \u2014 separation comes from the close games. '
+    + 'This assumes your pool takes the favorite in each game, which is usually right but not always. '
+    + 'Flipping two or three games a week is about the sweet spot; flip six and you will lose more weeks than you win.';
+}
+
+/* ---------------- picks ---------------- */
 gamesEl.addEventListener('click', function(e){
   var btn = e.target.closest ? e.target.closest('.side') : null;
-  if (!btn || btn.disabled) return;
-  var gid = btn.getAttribute('data-g'), team = btn.getAttribute('data-t');
-  var week = current.week;
-  if (!PICKS[week]) PICKS[week] = {};
-  if (PICKS[week][gid] === team) delete PICKS[week][gid];
-  else PICKS[week][gid] = team;
-  savePicks();
-  draw();
-  drawSeason();
+  if(!btn || btn.disabled) return;
+  var gid=btn.getAttribute('data-g'), team=btn.getAttribute('data-t'), week=current.week;
+  if(!PICKS[week]) PICKS[week]={};
+  if(PICKS[week][gid]===team) delete PICKS[week][gid];
+  else PICKS[week][gid]=team;
+  savePicks(); draw(); drawSeason();
 });
 
 function drawSeason(){
-  var body = $('seasonTable').getElementsByTagName('tbody')[0];
-  var rows = '<tr><th>Week</th><th>Record</th><th>Picked</th></tr>';
-  var totR = 0, totG = 0, any = false;
-
-  for (var w = 1; w <= WEEKS; w++){
-    var p = PICKS[w], r = RESULTS[w];
-    if (!p) continue;
-    var ids = Object.keys(p);
-    if (!ids.length) continue;
-    any = true;
-    var correct = 0, graded = 0;
+  var body=$('seasonTable').getElementsByTagName('tbody')[0];
+  var rows='<tr><th>Week</th><th>Record</th><th>Picked</th></tr>';
+  var totR=0, totG=0, any=false;
+  for(var w=1; w<=WEEKS; w++){
+    var p=PICKS[w], r=RESULTS[w];
+    if(!p) continue;
+    var ids=Object.keys(p);
+    if(!ids.length) continue;
+    any=true;
+    var correct=0, graded=0;
     ids.forEach(function(gid){
-      if (r && r[gid]){
-        graded++;
-        if (r[gid].w === p[gid]) correct++;
-      }
+      if(r && r[gid]){ graded++; if(r[gid].w===p[gid]) correct++; }
     });
-    totR += correct; totG += graded;
-    rows += '<tr' + (w === current.week ? ' class="now"' : '') + '>'
-         +    '<td>Week ' + w + '</td>'
-         +    '<td class="num">' + (graded ? correct + ' / ' + graded : '\u2014') + '</td>'
-         +    '<td>' + ids.length + ' games</td>'
-         +  '</tr>';
+    totR+=correct; totG+=graded;
+    rows+='<tr'+(w===current.week?' class="now"':'')+'>'
+        +   '<td>Week '+w+'</td>'
+        +   '<td class="num">'+(graded ? correct+' / '+graded : '\u2014')+'</td>'
+        +   '<td>'+ids.length+' games</td>'
+        + '</tr>';
   }
-
-  if (!any){
-    rows += '<tr><td colspan="3" style="color:var(--ink-soft)">Tap teams above to record your picks.</td></tr>';
-  }
-  body.innerHTML = rows;
-  $('seasonRec').innerHTML = totG ? (totR + '\u2013' + (totG - totR)) : '\u2014';
+  if(!any) rows+='<tr><td colspan="3" style="color:var(--ink-soft)">Tap teams above to record your picks.</td></tr>';
+  body.innerHTML=rows;
+  $('seasonRec').innerHTML = totG ? (totR+'\u2013'+(totG-totR)) : '\u2014';
 }
 
-/* ---------------- start on the current week ---------------- */
+/* ---------------- start ---------------- */
 fetch('https://site.api.espn.com/apis/site/v2/sports/football/nfl/scoreboard')
   .then(function(r){ return r.json(); })
   .then(function(d){
-    var n = d && d.week && d.week.number;
-    weekSel.value = (n >= 1 && n <= WEEKS) ? n : 1;
+    var n=d && d.week && d.week.number;
+    weekSel.value=(n>=1&&n<=WEEKS)?n:1;
   })
-  .catch(function(){ weekSel.value = 1; })
+  .catch(function(){ weekSel.value=1; })
   .then(function(){ load(); });
 </script>
 </body>
